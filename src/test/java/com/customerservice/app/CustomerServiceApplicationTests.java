@@ -1,4 +1,4 @@
-package com.customerservice.customerservice;
+package com.customerservice.app;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

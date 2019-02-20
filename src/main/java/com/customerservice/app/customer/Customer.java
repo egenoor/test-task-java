@@ -1,14 +1,16 @@
-package com.customerservice.customerservice;
+package com.customerservice.app.customer;
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Customer {
   @Id @GeneratedValue long id;
   public String firstName;
   public String lastName;
-  public String dateOfBirth;
+  @Temporal(TemporalType.DATE)
+  public Date dateOfBirth;
   @Column(unique=true)
   public String username;
   public String password;
-  public Boolean deleted;
+  public String deleted;
 }
