@@ -1,10 +1,16 @@
 package com.customerservice.app.customer;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 
 @RestController    
@@ -12,56 +18,57 @@ public class CustomerController{
     @Autowired
 	private CustomerDao customerDao;
 
-	@RequestMapping(value = "/addCustomer", method = RequestMethod.POST)
-	String add(String firstName,
-				String lastName,
-				Date dateOfBirth,
-				String username,
-				String password){
+	@RequestMapping(value = "/api/addCustomer", method = RequestMethod.POST)
+	public void add(@RequestBody Map<String, String> payload){
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+		LocalDate localDate = LocalDate.parse(payload.get("dateOfBirth"), formatter);
+		Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
 		Customer customer=new Customer();
-		customer.firstName=firstName;
-		customer.lastName=lastName;
-		customer.dateOfBirth=dateOfBirth;
-		customer.username=username;
-		customer.password=password;
+		customer.firstName=payload.get("firstName");
+		customer.lastName=payload.get("lastName");
+		customer.dateOfBirth=date;
+		customer.username=payload.get("username");
+		customer.password=payload.get("password");
 		customerDao.save(customer);
-		return "Added "+username;
+		System.out.println("Added "+payload.get("username"));
 	}
 
-	@RequestMapping(value = "/getAllCustomers", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/getAllCustomers", method = RequestMethod.GET)
 	public Iterable<Customer> getAllCustomers() {
 		return customerDao.findAll();
 	}
 
-	@RequestMapping(value = "/getCustomer", method = RequestMethod.GET)
-	public Customer getCustomer(Long id){
-		return customerDao.findById(id);
+	@RequestMapping(value = "/api/getCustomer", method = RequestMethod.GET)
+	public Customer getCustomer(String username){
+		return customerDao.findByUsername(username);
 	}
 
-	@RequestMapping(value = "/editCustomer", method = RequestMethod.POST)
-	public String editCustomer(Long id,
-								String firstName,
-								String lastName,
-								Date dateOfBirth,
-								String username,
-								String password){
-		Customer customer=getCustomer(id);
-		customer.firstName=firstName;
-		customer.lastName=lastName;
-		customer.dateOfBirth=dateOfBirth;
-		customer.username=username;
-		customer.password=password;
+	@RequestMapping(value = "/api/editCustomer", method = RequestMethod.POST)
+	public void editCustomer(@RequestBody Map<String, String> payload){
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+		LocalDate localDate = LocalDate.parse(payload.get("dateOfBirth"), formatter);
+		Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+		Customer customer=getCustomer(payload.get("username"));
+		customer.firstName=payload.get("firstName");
+		customer.lastName=payload.get("lastName");
+		customer.dateOfBirth=date;
+		customer.username=payload.get("username");
+		customer.password=payload.get("password");
 		customerDao.save(customer);
-		return "Edited "+ username;
+		System.out.println("Edited "+ payload.get("username"));
 	}
 
-	@RequestMapping(value = "/deleteCustomer", method = RequestMethod.POST)
-	public String deleteCustomer(Long id){
-		Customer customer=getCustomer(id);
+	@RequestMapping(value = "/api/deleteCustomer", method = RequestMethod.POST)
+	public void deleteCustomer(@RequestBody Map<String, String> payload){
+		Customer customer=getCustomer(payload.get("username"));
 		customer.deleted="deleted";
 		customer.username=null;
 		customerDao.save(customer);
-		return "Deleted customer with id: " + id;
+		System.out.println("Deleted customer with username: " + payload.get("username"));
 	}
 }
     
