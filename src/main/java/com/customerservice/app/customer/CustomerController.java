@@ -21,7 +21,7 @@ public class CustomerController{
 	@RequestMapping(value = "/api/addCustomer", method = RequestMethod.POST)
 	public void add(@RequestBody Map<String, String> payload){
 		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
 		LocalDate localDate = LocalDate.parse(payload.get("dateOfBirth"), formatter);
 		Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
