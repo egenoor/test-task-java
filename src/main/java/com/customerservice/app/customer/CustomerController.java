@@ -41,34 +41,33 @@ public class CustomerController{
 	}
 
 	@RequestMapping(value = "/api/getCustomer", method = RequestMethod.GET)
-	public Customer getCustomer(String username){
-		return customerDao.findByUsername(username);
+	public Customer getCustomer(Long id){
+		return customerDao.findById(id);
 	}
 
 	@RequestMapping(value = "/api/editCustomer", method = RequestMethod.POST)
 	public void editCustomer(@RequestBody Map<String, String> payload){
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
 		LocalDate localDate = LocalDate.parse(payload.get("dateOfBirth"), formatter);
 		Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-		Customer customer=getCustomer(payload.get("username"));
+		Customer customer=getCustomer(Long.parseLong(payload.get("id")));
 		customer.firstName=payload.get("firstName");
 		customer.lastName=payload.get("lastName");
 		customer.dateOfBirth=date;
 		customer.username=payload.get("username");
-		customer.password=payload.get("password");
 		customerDao.save(customer);
-		System.out.println("Edited "+ payload.get("username"));
+		System.out.println("Edited "+ payload.get("id"));
 	}
 
 	@RequestMapping(value = "/api/deleteCustomer", method = RequestMethod.POST)
 	public void deleteCustomer(@RequestBody Map<String, String> payload){
-		Customer customer=getCustomer(payload.get("username"));
+		Customer customer=getCustomer(Long.parseLong(payload.get("id")));
 		customer.deleted="deleted";
 		customer.username=null;
 		customerDao.save(customer);
-		System.out.println("Deleted customer with username: " + payload.get("username"));
+		System.out.println("Deleted customer with id: " + payload.get("id"));
 	}
 }
     

@@ -4,7 +4,9 @@ import java.util.Date;
 
 @Entity
 public class Customer {
-  @Id @GeneratedValue long id;
+  @Id 
+  @GeneratedValue 
+  public long id;
   public String firstName;
   public String lastName;
   @Temporal(TemporalType.DATE)
