@@ -3,6 +3,7 @@
 mvnw
 mvnw.cmd
 .mvn/
+bin/
 
 ### STS ###
 .apt_generated
